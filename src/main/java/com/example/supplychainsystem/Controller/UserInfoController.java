@@ -61,6 +61,19 @@ public class UserInfoController {
 
     }
 
+    @DeleteMapping("/admin/deleteUser")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
+    public ResponseEntity<UserResponseDTO> deleteUser(@RequestParam Integer userId) {
+        UserResponseDTO userResponseDTO = userInfoService.deleteUser(userId);
+        if(userResponseDTO != null){
+            return new ResponseEntity<>(userResponseDTO, HttpStatus.OK);
+        }
+        else{
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
+    }
+
     @PostMapping("/generateToken")
     public ResponseEntity<String> authenticateAndGetToken(@RequestBody AuthRequest authRequest) {
         Authentication authentication = authenticationManager.authenticate(

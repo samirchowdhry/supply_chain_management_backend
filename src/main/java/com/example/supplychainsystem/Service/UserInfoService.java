@@ -22,27 +22,27 @@ import java.util.Optional;
 public class UserInfoService implements UserDetailsService {
 
     @Autowired
-    private UserInfoRepository userInfoRepositoryRepository;
+    private UserInfoRepository userInfoRepository;
 
     @Autowired
     private PasswordEncoder encoder;
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        Optional<UserInfo> userDetail = userInfoRepositoryRepository.findByUsername(username);
+        Optional<UserInfo> userDetail = userInfoRepository.findByUsername(username);
         return userDetail.map(UserInfoDetails::new)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found: " + username));
     }
 
     public UserResponseDTO addUser(UserRequestDTO userRequestDTO) {
-        Optional<UserInfo> userDetail = userInfoRepositoryRepository.findByUsername(userRequestDTO.getUsername());
+        Optional<UserInfo> userDetail = userInfoRepository.findByUsername(userRequestDTO.getUsername());
         if(userDetail.isEmpty()){
             UserInfo userInfo = new UserInfo();
             userInfo.setDisplayName(userRequestDTO.getDisplayName());
             userInfo.setUsername(userRequestDTO.getUsername());
             userInfo.setRoles(userRequestDTO.getRoles());
             userInfo.setPassword(encoder.encode(userRequestDTO.getPassword()));
-            UserInfo user = userInfoRepositoryRepository.save(userInfo);
+            UserInfo user = userInfoRepository.save(userInfo);
             UserResponseDTO userResponseDTO = new UserResponseDTO();
             userResponseDTO.setId(user.getId());
             userResponseDTO.setUsername(user.getUsername());
@@ -59,7 +59,7 @@ public class UserInfoService implements UserDetailsService {
     }
 
     public List<UserResponseDTO> getAllUsers(){
-        List<UserInfo> userInfoList = userInfoRepositoryRepository.findAll();
+        List<UserInfo> userInfoList = userInfoRepository.findAll();
         List<UserResponseDTO> userResponseDTOList = new ArrayList<>();
         for (UserInfo user:userInfoList) {
             UserResponseDTO userResponseDTO = new UserResponseDTO();
@@ -82,7 +82,7 @@ public class UserInfoService implements UserDetailsService {
     }
 
     public UserResponseDTO getUserByEmail(String username){
-        UserInfo userDetail = userInfoRepositoryRepository.findByEmail(username);
+        UserInfo userDetail = userInfoRepository.findByEmail(username);
 
             UserResponseDTO userResponseDTO = new UserResponseDTO();
             userResponseDTO.setId(userDetail.getId());
@@ -93,6 +93,24 @@ public class UserInfoService implements UserDetailsService {
             userResponseDTO.setCreatedAt(userDetail.getCreatedAt());
             userResponseDTO.setUpdatedAt(userDetail.getUpdatedAt());
             return userResponseDTO;
+
+    }
+
+    public UserResponseDTO deleteUser(Integer userId){
+        UserInfo userDetail = userInfoRepository.findById(userId).get();
+
+        UserResponseDTO userResponseDTO = new UserResponseDTO();
+        userResponseDTO.setId(userDetail.getId());
+        userResponseDTO.setUsername(userDetail.getUsername());
+        userResponseDTO.setDisplayName(userDetail.getDisplayName());
+        userResponseDTO.setPassword(userDetail.getPassword());
+        userResponseDTO.setRoles(userDetail.getRoles());
+        userResponseDTO.setCreatedAt(userDetail.getCreatedAt());
+        userResponseDTO.setUpdatedAt(userDetail.getUpdatedAt());
+
+        userInfoRepository.delete(userDetail);
+
+        return userResponseDTO;
 
     }
 

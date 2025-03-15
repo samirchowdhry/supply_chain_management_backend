@@ -40,7 +40,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/auth/welcome", "/auth/addNewUser", "/auth/generateToken").permitAll()
                         .requestMatchers("/order/user/addOrder","/order/user/getOrdersByUser","/inventory/user/getInventoryList","/supplier/user/getUserByEmailUser").hasAuthority("ROLE_USER")
-                        .requestMatchers("/auth/admin/getAllUsers","/supplier/admin/getSupplierList","/order/order/getOrderList","/inventory/admin/getInventoryListAdmin","/order/order/updateOrder").hasAuthority("ROLE_ADMIN")
+                        .requestMatchers("/auth/admin/getAllUsers", "/auth/admin/deleteUser" ,"/supplier/admin/getSupplierList","/order/order/getOrderList","/inventory/admin/getInventoryListAdmin","/order/order/updateOrder").hasAuthority("ROLE_ADMIN")
                         .requestMatchers("/supplier/supplier/getUserByEmail","/supplier/supplier/getParticularSupplierList","/supplier/supplier/addSupplier"
                         ,"/inventory/inventory/getInventoryBySupplierId","/inventory/inventory/addInventory","/inventory/inventory/updateInventory","/order/order/getOrdersBySupplier").hasAuthority("ROLE_SUPPLIER")
                         .anyRequest().authenticated()
